@@ -1,22 +1,35 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthProvider';
+import { toast } from 'react-hot-toast';
 
 const Signup = () => {
 
     const { register, handleSubmit, formState: { errors }, } = useForm();
-    const { createUser } = useContext(AuthContext);
+    const { createUser, updateUser } = useContext(AuthContext);
+    const [signupError, setSignupError] = useState('');
 
     const handleSignup = (data) => {
         console.log(data);
+        setSignupError('');
         createUser(data.email, data.password)
             .then(result => {
                 const user = result.user;
                 console.log(user);
+                toast('User Created Successfully.');
+                const userInfo = {
+                    displayName: data.name
+                }
+                updateUser(userInfo)
+                    .then(() => { })
+                    .catch(err => console.log(err));
             })
-            .catch(err => console.error(err));
+            .catch(error => {
+                console.error(error);
+                setSignupError(error.message);
+            });
     }
 
     return (
@@ -49,12 +62,13 @@ const Signup = () => {
                         <input type="password" {...register("password", {
                             required: "Password de",
                             minLength: { value: 6, message: "Password must be at least 6 characters long" },
-                            pattern: { value: /(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%&? "])[a-zA-Z0-9!@#$%&?]{8,20}/, message: 'Strong password lagbe' }
+                            pattern: { value: /(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%&? "])[a-zA-Z0-9!@#$%&?]{6,20}/, message: 'Strong password lagbe' }
                         })} className="input input-bordered w-full max-w-xs"
                         />
                         {errors.password && <p className='text-red-600'>{errors.password.message}</p>}
                     </div>
                     <input className='btn btn-accent w-full mt-4' type="submit" />
+                    {signupError && <p className='text-red-600'>{signupError}</p>}
                 </form>
                 <p>Already have an account? <Link to='/login' className='text-secondary'>Please Login</Link></p>
                 <div className="divider">OR</div>
