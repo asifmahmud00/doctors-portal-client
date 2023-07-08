@@ -2,17 +2,34 @@ import { format } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import AppointmentOption from './AppointmentOption';
 import BookingModal from '../BookingModal/BookingModal';
+import { useQuery } from 'react-query';
 
 const AvailableAppointments = ({ selectedDate }) => {
 
-    const [apointmentOptions, setApointmentOptions] = useState([]);
+    // const [apointmentOptions, setApointmentOptions] = useState([]);
     const [treatment, setTreatment] = useState(null);
 
-    useEffect(() => {
-        fetch('appointmentOptions.json')
-            .then(res => res.json())
-            .then(data => setApointmentOptions(data))
-    }, [])
+    // const { data: apointmentOptions = [] } = useQuery({
+    //     queryKey: ['apointmentOptions'],
+    //     queryFn: () => fetch('http://localhost:5000/appointmentOptions')
+    //         .then(res => res.json())
+    // })
+
+    const { data: apointmentOptions = [] } = useQuery({
+        queryKey: ['apointmentOptions'],
+        queryFn: async () => {
+            const res = await fetch('http://localhost:5000/appointmentOptions');
+            const data = await res.json();
+            return data;
+        }
+    })
+
+    // useEffect(() => {
+    //     // fetch('appointmentOptions.json')
+    //     fetch('http://localhost:5000/appointmentOptions')
+    //         .then(res => res.json())
+    //         .then(data => setApointmentOptions(data))
+    // }, [])
 
     return (
         <section className='my-16'>
