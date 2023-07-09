@@ -1,9 +1,10 @@
 import { format } from 'date-fns';
 import React, { useContext } from 'react';
 import { AuthContext } from '../../../contexts/AuthProvider';
+import { toast } from 'react-hot-toast';
 
 const BookingModal = ({ treatment, setTreatment, selectedDate }) => {
-    const { name, slots } = treatment;
+    const { name: treatmentName, slots } = treatment;
     const date = format(selectedDate, 'PP');
     const { user } = useContext(AuthContext);
 
@@ -17,15 +18,33 @@ const BookingModal = ({ treatment, setTreatment, selectedDate }) => {
         const phone = form.phone.value;
         const booking = {
             appointmentDate: date,
-            treatment: name,
+            treatment: treatmentName,
             patient: name,
             slot,
             email,
             phone
-        }
+        };
 
-        console.log(booking);
-        setTreatment(null);
+        // console.log(booking);
+
+        fetch('http://localhost:5000/bookings', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(booking)
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                if (data.acknowledged) {
+                    setTreatment(null);
+                    toast.success('Booking Confirmed');
+                    console.log('Booking Confirmed');
+                }
+            });
+
+
     }
 
     return (
@@ -41,7 +60,7 @@ const BookingModal = ({ treatment, setTreatment, selectedDate }) => {
             <div className="modal">
                 <div className="modal-box relative">
                     <label htmlFor="modalBooking" className="btn btn-sm btn-circle absolute right-2 top-2">X</label>
-                    <h3 className="font-bold text-lg">{name}</h3>
+                    <h3 className="font-bold text-lg">{treatmentName}</h3>
                     <form onSubmit={handleBooking} className='grid grid-cols-1 gap-3 mt-10'>
                         <input type="text" placeholder="Type here" className="input input-bordered w-full" disabled value={date} />
                         <select name='slot' className="select select-bordered w-full">
