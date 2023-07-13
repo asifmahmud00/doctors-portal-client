@@ -40,7 +40,7 @@ const MyAppointment = () => {
 
                         </tr>)}
 
-                        {/* row 2 */}
+
 
                     </tbody>
                 </table>
