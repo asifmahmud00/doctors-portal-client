@@ -5,6 +5,7 @@ import Loading from '../../Shared/Loaing/Loading';
 
 const AddDoctor = () => {
     const { register, handleSubmit, formState: { errors }, } = useForm();
+    const imageHostKey = process.env.REACT_APP_imgbb_key;
 
     const { data: specialties, isLoading } = useQuery({
         queryKey: ['specialty'],
@@ -16,7 +17,9 @@ const AddDoctor = () => {
     })
 
     const handleAddDoctor = data => {
-        console.log(data);
+        console.log(data.image.FileList[0]);
+        const image = data.image;
+
     }
 
     if (isLoading) {
@@ -62,12 +65,12 @@ const AddDoctor = () => {
                 </div>
                 <div className="form-control w-full max-w-xs">
                     <label className="label"><span className="label-text">Photo</span></label>
-                    <input type="file" {...register("img",
+                    <input type="file" {...register("image",
                         { required: "Photo is required" }
                     )}
                         className="input input-bordered w-full max-w-xs"
                     />
-                    {errors.img && <p className='text-red-600'>{errors.img.message}</p>}
+                    {errors.image && <p className='text-red-600'>{errors.image.message}</p>}
                 </div>
                 <input className='btn btn-accent w-full mt-4' value='Add Doctor' type="submit" />
 
